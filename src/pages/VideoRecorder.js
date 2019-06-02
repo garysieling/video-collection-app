@@ -71,7 +71,8 @@ class VideoRecorder extends React.Component {
 
         const constraints = {
             audio: {
-                echoCancellation: {exact: true}
+                echoCancellation: {exact: true},
+                volume: 0
             },
             video: {
                 width: 1280, height: 720
