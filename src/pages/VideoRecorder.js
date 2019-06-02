@@ -75,7 +75,11 @@ class VideoRecorder extends React.Component {
                 volume: 0
             },
             video: {
-                width: 1280, height: 720
+                width: 1280, 
+                height: 720,
+                facingMode: {
+                    exact: "environment"
+                }
             }
         };
         
