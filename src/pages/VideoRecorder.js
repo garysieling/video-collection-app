@@ -22,6 +22,8 @@ class VideoRecorder extends React.Component {
 
     componentDidMount() {
         this.mediaSource.addEventListener('sourceopen', this.handleSourceOpen, false);
+    
+        this.startCamera();
     }
 
     handleSourceOpen(event) {
@@ -75,10 +77,10 @@ class VideoRecorder extends React.Component {
                 volume: 0
             },
             video: {
-                width: 1280, 
-                height: 720,
+                width: this.props.width, 
+                height: this.props.height,
                 facingMode: {
-                    exact: "environment"
+                    ideal: "environment"
                 }
             }
         };
@@ -174,12 +176,6 @@ class VideoRecorder extends React.Component {
                 <video className={styles.video} id="recorded" playsInline loop></video>
 
                 <div>
-                    <button 
-                        onClick={self.startCamera.bind(self)}
-                        className={styles.button} 
-                        id="start">
-                            Start camera
-                    </button>
                     <button 
                         onClick={
                             !self.state.recording ? 

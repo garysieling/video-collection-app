@@ -9,7 +9,10 @@ Description: Video uploader
 #    Default: /home/ec2-user/userdata
 
 Resources:
-  S3Bucket:
+  UserPool:
+    Type: "AWS::Cognito::UserPool"
+      
+  VideoBucket:
     Type: "AWS::S3::Bucket"
     Properties:
       CorsConfiguration:
@@ -26,7 +29,29 @@ Resources:
             AllowedHeaders: 
               - "*"
 
+  # TODO upload gatsby site
+  # TODO cloudfront this
+  WebsiteBucket:
+    Type: "AWS::S3::Bucket"
+
+  # TODO hook up logs
+  WebsiteLogsBucket:
+    Type: "AWS::S3::Bucket"
+
 Outputs:
-  BucketName:
+  WebsiteBucketUrl:
+    Description: Website Bucket Url
+    Value: !GetAtt WebsiteBucket.WebsiteURL
+
+  VideoBucketArn:
     Description: Video storage bucket
-    Value: !GetAtt S3Bucket.Arn
+    Value: !GetAtt VideoBucket.Arn
+
+  UserPoolName:
+    Description: User Pool
+    Value: !GetAtt UserPool.ProviderName
+    
+  UserPoolUrl:
+    Description: User Pool Url
+    Value: !GetAtt UserPool.ProviderURL
+
