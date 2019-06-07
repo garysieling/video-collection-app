@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './VideoRecorder.module.css';
 
-
+let MediaSource;
 
 class VideoRecorder extends React.Component {
     constructor() {
@@ -17,7 +17,9 @@ class VideoRecorder extends React.Component {
         this.recordedBlobs = null;
         this.sourceBuffer = null;
 
-        this.mediaSource = new MediaSource();
+        if (MediaSource) {
+            this.mediaSource = new MediaSource();
+        }
     }
 
     componentDidMount() {

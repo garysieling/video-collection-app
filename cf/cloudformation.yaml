@@ -33,6 +33,32 @@ Resources:
   # TODO cloudfront this
   WebsiteBucket:
     Type: "AWS::S3::Bucket"
+    Properties:
+      WebsiteConfiguration:
+        - IndexDocument: "index.html"
+        - ErrorDocument: "error.html"
+
+  WebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties: 
+      Bucket: !Ref WebsiteBucket
+      PolicyDocument: 
+        Statement: 
+          - 
+            Action: 
+              - "s3:GetObject"
+            Effect: "Allow"
+            Resource: 
+              Fn::Join: 
+                - ""
+                - 
+                  - "arn:aws:s3:::"
+                  - 
+                    Ref: "WebsiteBucket"
+                  - "/*"
+            Principal: "*"
+
+
 
   # TODO hook up logs
   WebsiteLogsBucket:

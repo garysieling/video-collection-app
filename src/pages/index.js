@@ -4,8 +4,11 @@ import TagControl from './TagControl';
 import VideoRecorder from './VideoRecorder';
 import VideoUploader from './VideoUploader';
 
+let document;
+
 class VideoTagger extends React.Component {
     render() {
+        if (!document) { return <div></div>; }
         /*
 window.innerHeight
 755
