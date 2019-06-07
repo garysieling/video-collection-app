@@ -34,9 +34,11 @@ Resources:
   WebsiteBucket:
     Type: "AWS::S3::Bucket"
     Properties:
+      LoggingConfiguration:
+        DestinationBucketName: !Ref WebsiteLogsBucket
       WebsiteConfiguration:
-        - IndexDocument: "index.html"
-        - ErrorDocument: "error.html"
+        IndexDocument: "index.html"
+        ErrorDocument: "error.html"
 
   WebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -58,11 +60,11 @@ Resources:
                   - "/*"
             Principal: "*"
 
-
-
   # TODO hook up logs
   WebsiteLogsBucket:
     Type: "AWS::S3::Bucket"
+    Properties:
+      AccessControl: LogDeliveryWrite
 
 Outputs:
   WebsiteBucketUrl:

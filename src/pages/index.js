@@ -4,27 +4,20 @@ import TagControl from './TagControl';
 import VideoRecorder from './VideoRecorder';
 import VideoUploader from './VideoUploader';
 
-let document;
-
 class VideoTagger extends React.Component {
-    render() {
-        if (!document) { return <div></div>; }
-        /*
-window.innerHeight
-755
-document.body.clientHeight
-956
-document.documentElement.clientHeight
-743
+    componentDidMount() {
+        this.height = document.documentElement.clientHeight;
+        this.width = document.documentElement.clientWidth;
 
-<TagControl />
-                
-        */
+        this.setState();
+    }
+
+    render() {
         return (
             <div>
                 <VideoRecorder
-                    height={document.documentElement.clientHeight}
-                    width={document.documentElement.clientWidth}
+                    height={this.height}
+                    width={this.width}
                  />
                  <VideoUploader />
             </div>

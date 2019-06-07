@@ -1,8 +1,6 @@
 import React from 'react';
 import styles from './VideoRecorder.module.css';
 
-let MediaSource;
-
 class VideoRecorder extends React.Component {
     constructor() {
         super();
@@ -16,13 +14,10 @@ class VideoRecorder extends React.Component {
         this.mediaRecorder = null;
         this.recordedBlobs = null;
         this.sourceBuffer = null;
-
-        if (MediaSource) {
-            this.mediaSource = new MediaSource();
-        }
     }
 
     componentDidMount() {
+        this.mediaSource = new MediaSource();
         this.mediaSource.addEventListener('sourceopen', this.handleSourceOpen, false);
     
         this.startCamera();
