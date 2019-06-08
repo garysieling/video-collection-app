@@ -3,10 +3,11 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: Video uploader
 
 #Parameters:
-#  FilePath:
+#  DomainName:
 #    Description: The path of the  file.
 #    Type: String
-#    Default: /home/ec2-user/userdata
+#  CertificateArn:
+#    Type: String
 
 Resources:
   UserPool:
@@ -60,11 +61,43 @@ Resources:
                   - "/*"
             Principal: "*"
 
-  # TODO hook up logs
   WebsiteLogsBucket:
     Type: "AWS::S3::Bucket"
     Properties:
       AccessControl: LogDeliveryWrite
+
+  CloudfrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties: 
+      DistributionConfig: 
+        Enabled: true
+        DefaultCacheBehavior:
+          TargetOriginId: !Sub 's3-origin-${WebsiteBucket}'
+          ViewerProtocolPolicy: 'redirect-to-https'
+          ForwardedValues:
+            QueryString: false
+        DefaultRootObject: 'index.html'
+        Origins:
+          - 
+            Id: !Sub "s3-origin-${WebsiteBucket}"
+            DomainName: !GetAtt WebsiteBucket.DomainName
+            OriginPath: ""
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${OriginAccessIdentity}'
+        #ViewerCertificate:
+        #  SslSupportMethod: 'sni-only'
+        #  AcmCertificateArn: !Ref CertificateArn
+
+  OriginAccessIdentity:
+    Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: 'Access S3 bucket content only through CloudFront'
+
+#  Certificate:
+#    Type: AWS::CertificateManager::Certificate
+#    Properties:
+#      DomainName: !Ref DomainName
 
 Outputs:
   WebsiteBucketUrl:
