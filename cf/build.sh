@@ -6,8 +6,11 @@ cd cf
 
 STACK_NAME=video-player
 REGION=us-east-1
+UNAUTH_ROLE=$1
+AUTH_ROLE=$2
 
-PARAMETERS="--parameters ParameterKey=DomainName,ParameterValue=videoclips.garysieling.com"
+# ParameterKey=DomainName,ParameterValue=videoclips.garysieling.com
+PARAMETERS="--parameters ParameterKey=UnauthenticatedUserRole,ParameterValue=$UNAUTH_ROLE ParameterKey=AuthenticatedUserRole,ParameterValue=$AUTH_ROLE"
 
 aws cloudformation validate-template --template-body file://cloudformation.yaml || exit
 #aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://cloudformation.yaml $PARAMETERS

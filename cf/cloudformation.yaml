@@ -2,7 +2,13 @@ AWSTemplateFormatVersion: "2010-09-09"
 
 Description: Video uploader
 
-#Parameters:
+Parameters:
+  UnauthenticatedUserRole:
+    Type: String
+    Description: Cognito Role for unauthenticated users
+  AuthenticatedUserRole:
+    Type: String
+    Description: Cognito Role for authenticated users
 #  DomainName:
 #    Description: The path of the  file.
 #    Type: String
@@ -10,6 +16,7 @@ Description: Video uploader
 #    Type: String
 
 Resources:
+  # TODO set this up automatically w/openid provider
   UserPool:
     Type: "AWS::Cognito::UserPool"
       
@@ -30,8 +37,27 @@ Resources:
             AllowedHeaders: 
               - "*"
 
-  # TODO upload gatsby site
-  # TODO cloudfront this
+  VideoBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties: 
+      Bucket: !Ref VideoBucket
+      PolicyDocument: 
+        Statement: 
+          - 
+            Action: 
+              - "s3:Put*"
+            Effect: "Allow"
+            Resource: 
+              Fn::Join: 
+                - ""
+                - 
+                  - "arn:aws:s3:::"
+                  - 
+                    Ref: VideoBucket
+                  - "/*"
+            Principal:
+              AWS: 
+                - !Ref UnauthenticatedUserRole
   WebsiteBucket:
     Type: "AWS::S3::Bucket"
     Properties:

@@ -2,7 +2,7 @@ import React from 'react';
 import indexStyles from './index.module.css';
 import TagControl from './TagControl';
 import VideoRecorder from './VideoRecorder';
-import VideoUploader from './VideoUploader';
+import FileUpload from './FileUpload';
 
 class VideoTagger extends React.Component {
     componentDidMount() {
@@ -15,11 +15,11 @@ class VideoTagger extends React.Component {
     render() {
         return (
             <div>
+                <FileUpload tag={'washing_machine'} />
                 <VideoRecorder
                     height={this.height}
                     width={this.width}
                  />
-                 <VideoUploader />
             </div>
         );
     }
