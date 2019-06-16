@@ -116,7 +116,8 @@ class VideoRecorder extends React.Component {
         self.mediaRecorder.onstop = (event) => {
             console.log('Recorded Blobs: ', self.recordedBlobs);
             console.log('Recorder stopped: ', event);
-            this.setState({recording: false, hasVideo: true});
+            this.setState({recording: false, hasVideo: true});            
+            this.props.onCompleteRecording(self.recordedBlobs);
         };
 
         self.mediaRecorder.ondataavailable = self.handleDataAvailable.bind(self);

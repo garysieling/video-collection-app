@@ -4,7 +4,20 @@ import AWS from 'aws-sdk';
 
 const bucketName = '';
 const bucketRegion = '';
-const IdentityPoolId = '';
+
+// From https://stackoverflow.com/questions/105034/create-guid-uuid-in-javascript
+function generateGuid() {
+  let result, i, j;
+  result = '';
+  for(j=0; j<32; j++) {
+    if( j == 8 || j == 12 || j == 16 || j == 20) 
+      result = result + '-';
+    i = Math.floor(Math.random()*16).toString(16).toUpperCase();
+    result = result + i;
+  }
+  return result;
+}
+
 
 AWS.config.update({
   region: bucketRegion,
@@ -18,19 +31,14 @@ const s3 = new AWS.S3({
   params: {Bucket: bucketName}
 });
 
-function upload(tag) {
+function upload(tag, recordedBlobs) {
   return () => {
-    const files = document.getElementById('photoupload').files;
-    if (!files.length) {
-      return alert('Please choose a file to upload first.');
-    }
-    const file = files[0];
-    const fileName = file.name;
+    const superBuffer = new Blob(recordedBlobs, {type: 'video/webm'});
 
-    const fileKey = tag + "/" + fileName;
+    const fileKey = tag + "/" + generateGuid() + ".webm";
     s3.upload({
       Key: fileKey,
-      Body: file,
+      Body: superBuffer,
       ACL: 'public-read'
     }, function(err, data) {
       if (err) {
@@ -42,17 +50,13 @@ function upload(tag) {
 }
 
 /*
-TODO: take the video file as an arg
-TODO: upload it
-TODO: take the tags as args and apply them on S3
 TODO: transfer acceleration
 TODO: signed urls
 TODO: make sure this is authenticated correctly
 TODO: how to put secrets in this page securely
 */
-export default ({tag}) => (
+export default ({tag, recordedBlobs}) => (
     <div>
-        <input id="photoupload" type="file" accept="image/*"></input>
-        <button onClick={upload(tag)}>Upload</button>
+        <button onClick={upload(tag, recordedBlobs)}>Upload</button>
     </div>
 )
