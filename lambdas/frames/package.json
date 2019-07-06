@@ -1,0 +1,49 @@
+{
+  "name": "serverless-ffmpeg",
+  "version": "1.0.0",
+  "description": "Run ffmpeg serverless!",
+  "dependencies": {
+    "aws-sdk": "^2.173.0"
+  },
+  "devDependencies": {
+    "ava": "^0.24.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "fs-extra": "^5.0.0",
+    "serverless-s3-remover": "^0.4.1",
+    "serverless-webpack": "^4.2.0",
+    "webpack": "^3.10.0",
+    "webpack-plugin-copy": "^1.0.1"
+  },
+  "scripts": {
+    "deploy": "serverless deploy function -f ffmpeg",
+    "stack-create": "sls deploy -v",
+    "stack-destroy": "sls remove -v",
+    "logs": "sls logs -f ffmpeg -t",
+    "test": "ava test/**/*.test.js",
+    "test-watch": "npm run test -- --watch",
+    "test-ci": "npm run test -- --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kvaggelakos/serverless-ffmpeg.git"
+  },
+  "keywords": [
+    "serverless",
+    "ffmpeg",
+    "aws",
+    "lambda",
+    "cloud function",
+    "serverless-framework"
+  ],
+  "bugs": {
+    "url": "https://github.com/kvaggelakos/serverless-ffmpeg/issues"
+  },
+  "ava": {
+    "require": "babel-register",
+    "babel": "inherit"
+  },
+  "author": "Kostas Vaggelakos <kostas@vaggelakos.com>",
+  "license": "MIT"
+}

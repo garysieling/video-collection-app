@@ -1,0 +1,77 @@
+
+# Service name
+service: serverless-ffmpeg
+
+custom:
+  # Configure these
+  source_bucket: ${file(./config.yml):source_bucket}
+  destination_bucket: ${file(./config.yml):destination_bucket}
+  ffmpeg_params: ${file(./config.yml):ffmpeg_params}
+  # Leave as is
+  remover:
+     buckets:
+       - ${self:custom.source_bucket}
+       - ${self:custom.destination_bucket}
+
+plugins:
+  - serverless-webpack
+  - serverless-s3-remover
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  timeout: 300
+  stage: ${file(./config.yml):stage}
+  region: ${file(./config.yml):region}
+  memorySize: ${file(./config.yml):memorySize}
+  environment:
+    DESTINATION_BUCKET: ${self:custom.destination_bucket}
+    FFMPEG_PARAMS: ${self:custom.ffmpeg_params}
+  iamRoleStatements:
+    # List buckets
+    - Effect: Allow
+      Action:
+        - s3:ListBucket
+      Resource:
+        - Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - ${self:custom.source_bucket}
+        - Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - ${self:custom.destination_bucket}
+    # Operate in buckets
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+        - s3:DeleteObject
+      Resource:
+        - Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - ${self:custom.source_bucket}
+            - "/*"
+        - Fn::Join:
+          - ""
+          - - "arn:aws:s3:::"
+            - ${self:custom.destination_bucket}
+            - "/*"
+
+functions:
+  ffmpeg:
+    handler: handler.main
+    events:
+      - s3:
+          bucket: ${self:custom.source_bucket} # This will create the source bucket
+          event: s3:ObjectCreated:*
+
+
+resources:
+  Resources:
+    # Make the output bucket
+    FfmpegDestination:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.destination_bucket}
