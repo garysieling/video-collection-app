@@ -28,6 +28,11 @@ provider:
     DESTINATION_BUCKET: ${self:custom.destination_bucket}
     FFMPEG_PARAMS: ${self:custom.ffmpeg_params}
   iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - sqs:*
+      Resource: 
+        - "*"
     # List buckets
     - Effect: Allow
       Action:
@@ -60,6 +65,8 @@ provider:
             - "/*"
 
 functions:
+  completed:
+    handler: handler.completed
   ffmpeg:
     handler: handler.main
     events:
@@ -75,3 +82,8 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.destination_bucket}
+    VideoQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        MessageRetentionPeriod: 300
+        QueueName: "VideosToIndex"
