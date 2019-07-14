@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './VideoRecorder.module.css';
+import TagControl from './TagControl';
 
 class VideoRecorder extends React.Component {
     constructor() {
@@ -132,6 +133,11 @@ class VideoRecorder extends React.Component {
 
     stopRecording() {
         this.mediaRecorder.stop();
+
+        this.setState({
+            isRecording: false,
+            hasVideo: true
+        });
     }
 
     playVideo() {
@@ -168,12 +174,26 @@ class VideoRecorder extends React.Component {
     render() {
         const self = this;
 
+        /*<button 
+            onClick={self.downloadVideo.bind(self)}
+            className={styles.button}  
+            id="download" 
+            disabled={!this.state.hasVideo}>Download
+        </button>*/
+        /*<button 
+            onClick={self.playVideo.bind(self)}
+            className={styles.button}
+            id="play" 
+            disabled={!this.state.hasVideo}>Play
+        </button>*/
+        /*
+        <video className={styles.video} id="recorded" playsInline loop></video>
+        */
+
         return (
             <div>   
-                <video className={styles.video} id="gum" playsInline autoPlay muted></video>
-                <video className={styles.video} id="recorded" playsInline loop></video>
-
-                <div>
+                {
+                    !this.state.hasVideo ? (
                     <button 
                         onClick={
                             !self.state.recording ? 
@@ -183,21 +203,30 @@ class VideoRecorder extends React.Component {
                         className={styles.button}  
                         id="record" 
                         disabled={!this.state.ready}>{
-                            !self.state.recording ? "Start Recording" : "Stop Recording"
+                            !self.state.recording ? "Record" : "Stop"
                         }
-                    </button>
-                    <button 
-                        onClick={self.playVideo.bind(self)}
-                        className={styles.button}
-                        id="play" 
-                        disabled={!this.state.hasVideo}>Play
-                    </button>
-                    <button 
-                        onClick={self.downloadVideo.bind(self)}
-                        className={styles.button}  
-                        id="download" 
-                        disabled={!this.state.hasVideo}>Download
-                    </button>
+                        </button>
+                    ) : null
+                }
+
+                {
+                    (this.state.hasVideo && 
+                    !this.state.isRecording) ? (
+                        <TagControl 
+                            defaultValue={this.props.selectedTag} 
+                            setTag={self.props.setTag} />
+                    ) : null
+                }
+
+                <div>
+                    <video className={styles.video} 
+                        id="gum" 
+                        playsInline 
+                        autoPlay 
+                        muted
+                    >
+
+                    </video>
                 </div>
 
                 <ul>

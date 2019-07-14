@@ -4,3 +4,16 @@
     padding-right: 2px;
     width: 99px;
   }
+
+.buttonSelected {
+  margin: 0 3px 10px 0;
+  padding-left: 2px;
+  padding-right: 2px;
+  width: 99px;
+  color: #222299;
+
+  -webkit-box-shadow: inset 0px 0px 5px #c1c1c1;
+     -moz-box-shadow: inset 0px 0px 5px #c1c1c1;
+          box-shadow: inset 0px 0px 5px #c1c1c1;
+   outline: none;
+}

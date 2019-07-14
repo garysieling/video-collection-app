@@ -56,7 +56,5 @@ TODO: make sure this is authenticated correctly
 TODO: how to put secrets in this page securely
 */
 export default ({tag, recordedBlobs}) => (
-    <div>
-        <button onClick={upload(tag, recordedBlobs)}>Upload</button>
-    </div>
+  <button onClick={upload(tag, recordedBlobs)}>Upload</button>
 )

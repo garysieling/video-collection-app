@@ -10,7 +10,8 @@ class VideoTagger extends React.Component {
         super();
 
         this.state = {
-            recordedBlobs: []
+            recordedBlobs: [],
+            selectedTag: null
         }
     }
 
@@ -25,16 +26,26 @@ class VideoTagger extends React.Component {
         this.setState({recordedBlobs});
     }
 
+    setTag(tag) {
+        this.setState({selectedTag: tag});
+    }
+
     render() {
         return (
             <div>
-                <FileUpload 
-                    tag={'washing_machine'} 
-                    recordedBlobs={this.state.recordedBlobs}
-                />
+                {
+                    this.state.recordedBlobs.length > 0 ? (
+                        <FileUpload 
+                            tag={this.state.selectedTag} 
+                            recordedBlobs={this.state.recordedBlobs}
+                        />
+                    ) : null
+                }
                 <VideoRecorder
                     height={this.height}
                     width={this.width}
+                    setTag={this.setTag.bind(this)}
+                    selectedTag={this.state.selectedTag}
                     onCompleteRecording={this.onCompleteRecording.bind(this)}
                  />
             </div>

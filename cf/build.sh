@@ -1,7 +1,9 @@
 set -e
 set -o xtrace
 cd ..
-#gatsby build 
+
+gatsby build 
+
 cd cf
 
 STACK_NAME=video-player
@@ -17,7 +19,7 @@ aws cloudformation validate-template --template-body file://cloudformation.yaml 
 aws cloudformation update-stack --stack-name $STACK_NAME $PARAMETERS --template-body file://cloudformation.yaml || exit
 
 S3_BUCKET=$(aws cloudformation list-stack-resources --stack-name $STACK_NAME \
-  | jq '.StackResourceSummaries | .[] | select(.LogicalResourceId | inside("WebsiteBucket"))' \
+  | jq '.StackResourceSummaries | .[] | select(.LogicalResourceId | test("^WebsiteBucket$"))' \
   | jq -cr .PhysicalResourceId )
 echo $S3_BUCKET
 
