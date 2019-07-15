@@ -7,17 +7,17 @@ export const main = async (event, context, callback) => {
   console.log(JSON.stringify(event));
   const {eventName, bucket, key} = getFileInformation(event);
 
-  console.log(`Received ${eventName} for item in bucket: ${bucket}, key: ${key}`)
+  console.log(`Received ${eventName} for item in bucket: ${bucket}, key: ${key}`);
 
   try {
-    const destPath = await download(bucket, key)
-    await ffprobe(destPath)
-    const outputPath = await ffmpeg(destPath, 'jpg', getFfmpegParameters())
-    await uploadFolder(getDestinationBucket(), key, outputPath)
+    const destPath = await download(bucket, key);
+    await ffprobe(destPath);
+    const outputPath = await ffmpeg(destPath, 'jpg', getFfmpegParameters());
+    await uploadFolder(getDestinationBucket(), key, outputPath);
 
-    await queueCompletedMessage(destPath)
+    await queueCompletedMessage(destPath);
   } catch (error) {
-    callback(error)
+    callback(error);
   }
 }
 

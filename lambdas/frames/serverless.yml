@@ -65,8 +65,6 @@ provider:
             - "/*"
 
 functions:
-  completed:
-    handler: handler.completed
   ffmpeg:
     handler: handler.main
     events:

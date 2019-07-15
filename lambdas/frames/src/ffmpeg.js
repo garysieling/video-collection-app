@@ -63,7 +63,7 @@ export function ffmpeg(file, extension, ffmpegArgs) {
       '-i',
       file,
       ...(ffmpegArgs || []),
-      `${join(outputDirectory, basename(file, extname(file)))}%04d.${extension}`,
+      `${join(outputDirectory, "frame")}%04d.${extension}`,
     ]
 
     console.log('Running: ffmpeg', args.join(' '))
