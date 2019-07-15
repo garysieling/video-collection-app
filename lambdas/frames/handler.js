@@ -4,7 +4,8 @@ import { getDestinationBucket, getFfmpegParameters } from './src/env';
 import { ffprobe, ffmpeg } from './src/ffmpeg';
  
 export const main = async (event, context, callback) => {
-  const {eventName, bucket, key} = getFileInformation(event)
+  console.log(JSON.stringify(event));
+  const {eventName, bucket, key} = getFileInformation(event);
 
   console.log(`Received ${eventName} for item in bucket: ${bucket}, key: ${key}`)
 
@@ -18,7 +19,7 @@ export const main = async (event, context, callback) => {
   } catch (error) {
     callback(error)
   }
-
 }
 
-export const completed = () => queueCompletedMessage('test');
+export const completed = 
+  () => queueCompletedMessage('test');
