@@ -9,6 +9,9 @@ Parameters:
   AuthenticatedUserRole:
     Type: String
     Description: Cognito Role for authenticated users
+  DatabasePassword:
+    Type: String
+    Description: Database password
 
 #  DomainName:
 #    Description: The path of the  file.
@@ -24,6 +27,7 @@ Resources:
       UserPoolName: "VideoCollectionAppUserPool"
       UsernameAttributes:
         - "email"
+    # TODO ses
 
   VideoBucket:
     Type: "AWS::S3::Bucket"
@@ -58,7 +62,8 @@ Resources:
                   - "/*"
             Principal:  
               AWS:
-                - !Sub "arn:aws:iam::${AWS::AccountId}:role/${UnauthenticatedUserRole}"
+                - !Ref UnauthenticatedUserRole
+
   WebsiteBucket:
     Type: "AWS::S3::Bucket"
     Properties:
@@ -122,6 +127,49 @@ Resources:
 #    Type: AWS::CertificateManager::Certificate
 #    Properties:
 #      DomainName: !Ref DomainName
+  VideoPlayerVPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: "192.168.0.0/16"
+
+  SubnetAZ1:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      CidrBlock: "192.168.0.0/17"
+      VpcId: !Ref VideoPlayerVPC
+      AvailabilityZone: "us-east-1a"
+
+  SubnetAZ2:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      CidrBlock: "192.168.128.0/17"
+      VpcId: !Ref VideoPlayerVPC
+      AvailabilityZone: "us-east-1b"
+
+  DatabaseSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Video Collection Database Security Group"
+      VpcId: !Ref VideoPlayerVPC
+
+  DatabaseSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: "Subnet for the database"
+      SubnetIds:
+        - !Ref SubnetAZ1
+        - !Ref SubnetAZ2
+
+  Database:
+    Type: "AWS::RDS::DBCluster"
+    Properties:
+      Engine: "aurora-postgresql"
+      EngineMode: "serverless"
+      MasterUserPassword: !Ref DatabasePassword
+      MasterUsername: "videoplayer"
+      DBSubnetGroupName: !Ref DatabaseSubnetGroup
+      VpcSecurityGroupIds:
+        - !Ref DatabaseSecurityGroup
 
 Outputs:
   WebsiteBucketUrl:
