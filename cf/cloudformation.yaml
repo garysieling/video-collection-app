@@ -9,6 +9,7 @@ Parameters:
   AuthenticatedUserRole:
     Type: String
     Description: Cognito Role for authenticated users
+
 #  DomainName:
 #    Description: The path of the  file.
 #    Type: String
@@ -18,72 +19,70 @@ Parameters:
 Resources:
   # TODO set this up automatically w/openid provider
   UserPool:
-    Type: "AWS::Cognito::UserPool"
-      
+    Type: "AWS::Cognito::UserPool"      
+    Properties:
+      UserPoolName: "VideoCollectionAppUserPool"
+      UsernameAttributes:
+        - "email"
+
   VideoBucket:
     Type: "AWS::S3::Bucket"
     Properties:
       CorsConfiguration:
         CorsRules:
-          -
-            AllowedOrigins: 
+          - AllowedOrigins:
               - "*"
-            AllowedMethods: 
+            AllowedMethods:
               - POST
               - GET
               - PUT
               - DELETE
               - HEAD
-            AllowedHeaders: 
+            AllowedHeaders:
               - "*"
 
   VideoBucketPolicy:
     Type: AWS::S3::BucketPolicy
-    Properties: 
+    Properties:
       Bucket: !Ref VideoBucket
-      PolicyDocument: 
-        Statement: 
-          - 
-            Action: 
+      PolicyDocument:
+        Statement:
+          - Action:
               - "s3:Put*"
             Effect: "Allow"
-            Resource: 
-              Fn::Join: 
+            Resource:
+              Fn::Join:
                 - ""
-                - 
-                  - "arn:aws:s3:::"
-                  - 
-                    Ref: VideoBucket
+                - - "arn:aws:s3:::"
+                  - Ref: VideoBucket
                   - "/*"
-            Principal:
-              AWS: 
-                - !Ref UnauthenticatedUserRole
+            Principal:  
+              AWS:
+                - !Sub "arn:aws:iam::${AWS::AccountId}:role/${UnauthenticatedUserRole}"
   WebsiteBucket:
     Type: "AWS::S3::Bucket"
     Properties:
       LoggingConfiguration:
         DestinationBucketName: !Ref WebsiteLogsBucket
+
       WebsiteConfiguration:
         IndexDocument: "index.html"
         ErrorDocument: "error.html"
 
   WebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
-    Properties: 
+    Properties:
       Bucket: !Ref WebsiteBucket
-      PolicyDocument: 
-        Statement: 
-          - 
-            Action: 
+      PolicyDocument:
+        Statement:
+          - Action:
               - "s3:GetObject"
             Effect: "Allow"
-            Resource: 
-              Fn::Join: 
+            Resource:
+              Fn::Join:
                 - ""
-                - 
-                  - "arn:aws:s3:::"
-                  - 
-                    Ref: "WebsiteBucket"
+                - - "arn:aws:s3:::"
+                  - Ref: "WebsiteBucket"
                   - "/*"
             Principal: "*"
 
@@ -94,31 +93,30 @@ Resources:
 
   CloudfrontDistribution:
     Type: AWS::CloudFront::Distribution
-    Properties: 
-      DistributionConfig: 
+    Properties:
+      DistributionConfig:
         Enabled: true
         DefaultCacheBehavior:
-          TargetOriginId: !Sub 's3-origin-${WebsiteBucket}'
-          ViewerProtocolPolicy: 'redirect-to-https'
+          TargetOriginId: !Sub "s3-origin-${WebsiteBucket}"
+          ViewerProtocolPolicy: "redirect-to-https"
           ForwardedValues:
             QueryString: false
-        DefaultRootObject: 'index.html'
+        DefaultRootObject: "index.html"
         Origins:
-          - 
-            Id: !Sub "s3-origin-${WebsiteBucket}"
+          - Id: !Sub "s3-origin-${WebsiteBucket}"
             DomainName: !GetAtt WebsiteBucket.DomainName
             OriginPath: ""
             S3OriginConfig:
-              OriginAccessIdentity: !Sub 'origin-access-identity/cloudfront/${OriginAccessIdentity}'
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${OriginAccessIdentity}"
         #ViewerCertificate:
         #  SslSupportMethod: 'sni-only'
         #  AcmCertificateArn: !Ref CertificateArn
 
   OriginAccessIdentity:
-    Type: 'AWS::CloudFront::CloudFrontOriginAccessIdentity'
+    Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
     Properties:
       CloudFrontOriginAccessIdentityConfig:
-        Comment: 'Access S3 bucket content only through CloudFront'
+        Comment: "Access S3 bucket content only through CloudFront"
 
 #  Certificate:
 #    Type: AWS::CertificateManager::Certificate
@@ -137,8 +135,7 @@ Outputs:
   UserPoolName:
     Description: User Pool
     Value: !GetAtt UserPool.ProviderName
-    
+
   UserPoolUrl:
     Description: User Pool Url
     Value: !GetAtt UserPool.ProviderURL
-
