@@ -1,6 +1,6 @@
 import React from 'react';
 
-class Index extends React.Component {
+class VideoList extends React.Component {
 
     constructor() {
         super();
@@ -13,17 +13,17 @@ class Index extends React.Component {
         return (
             <ul>
                 <li>
-                    <a href="/list">List</a>
+                    Video 1
                 </li>
                 <li>
-                    <a href="/viewer">Viewer</a>
+                    Video 2
                 </li>
                 <li>
-                    <a href="/record">Record</a>
+                    Video 3
                 </li>
             </ul>
         );
     }
 }
 
-export default Index;
+export default VideoList;
