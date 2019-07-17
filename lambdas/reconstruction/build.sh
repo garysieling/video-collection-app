@@ -1,1 +1,3 @@
-docker build -t openmvs .
+docker build -t garysieling/openmvs .
+
+docker push garysieling/openmvs
