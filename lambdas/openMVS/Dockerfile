@@ -40,5 +40,7 @@ RUN mkdir openMVS_build && cd openMVS_build && \
 #If you want to use OpenMVS as shared library, add to the CMake command:
 #-DBUILD_SHARED_LIBS=ON
 
+RUN git clone https://github.com/cdcseacave/openMVS_sample.git
+
 #Install OpenMVS library (optional):
-ENTRYPOINT bash
+CMD python /openMVS_sample/MvgMvs_Pipeline.py /images/ /output/
