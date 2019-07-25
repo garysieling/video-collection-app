@@ -1,46 +1,46 @@
+# First build...
+FROM ubuntu:16.04 as build
+MAINTAINER Speden Aave <renfld@gmail.com>
+WORKDIR /tmp
+ADD build.sh /tmp/build.sh
+RUN /tmp/build.sh
+
+# ..and then create a more lightweight image to actually run stuff in.
 FROM ubuntu:16.04
-
-#Prepare and empty machine for building:
-RUN apt-get update -qq && apt-get install -qq
-RUN apt-get -y install build-essential git mercurial cmake libpng-dev libjpeg-dev libtiff-dev libglu1-mesa-dev libxmu-dev libxi-dev
-
-#Eigen (Required)
-RUN hg clone https://bitbucket.org/eigen/eigen#3.2 && \
-    mkdir eigen_build && cd eigen_build && \
-    cmake . ../eigen && \
-    make && make install 
-
-#Boost (Required)
-RUN apt-get -y install libboost-iostreams-dev libboost-program-options-dev libboost-system-dev libboost-serialization-dev
-
-#OpenCV (Required)
-RUN apt-get -y install libopencv-dev
-
-#CGAL (Required)
-RUN apt-get -y install libcgal-dev libcgal-qt5-dev
-
-#VCGLib (Required)
-RUN git clone https://github.com/cdcseacave/VCG.git vcglib
-
-#Ceres (Required)
-RUN apt-get -y install libatlas-base-dev libsuitesparse-dev
-RUN git clone https://ceres-solver.googlesource.com/ceres-solver ceres-solver
-RUN mkdir ceres_build && cd ceres_build && \
-    cmake . ../ceres-solver/ -DMINIGLOG=ON -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF && \
-    make -j2 && make install
-
-#GLFW3 (Optional)
-RUN apt-get -y install freeglut3-dev libglew-dev libglfw3-dev
-
-#OpenMVS
-RUN git clone https://github.com/cdcseacave/openMVS.git openMVS
-RUN mkdir openMVS_build && cd openMVS_build && \
-    cmake . ../openMVS -DCMAKE_BUILD_TYPE=Release -DVCG_ROOT="/vcglib" && \
-    make -j2 && make install
-#If you want to use OpenMVS as shared library, add to the CMake command:
-#-DBUILD_SHARED_LIBS=ON
-
-RUN git clone https://github.com/cdcseacave/openMVS_sample.git
-
-#Install OpenMVS library (optional):
-CMD python /openMVS_sample/MvgMvs_Pipeline.py /images/ /output/
+ARG UID=1000
+ARG GID=1000
+RUN apt-get update && apt-get upgrade -y && apt-get install -y \
+    curl \
+    exiftool \
+    ffmpeg \
+    mediainfo \
+    graphviz \
+    libpng12-0 \
+    libjpeg-turbo8 \
+    libtiff5 \
+    libxxf86vm1 \
+    libxi6 \
+    libxrandr2 \
+    libatlas-base-dev \
+    libqt5widgets5 \
+    libboost-iostreams1.58.0 \
+    libboost-program-options1.58.0 \
+    libboost-serialization1.58.0 \
+    libopencv-calib3d2.4v5 \
+    libopencv-highgui2.4v5 \
+    libgoogle-glog0v5 \
+    libfreeimage3 \
+    libcgal11v5 \
+    libglew1.13 \
+    libcholmod3.0.6 \
+    libcxsparse3.1.4 \
+    python-minimal
+COPY --from=build /opt /opt
+COPY pipeline.py /opt/dpg/pipeline.py
+RUN groupadd -g $GID ptools
+RUN useradd -r -u $UID -m -g ptools ptools
+WORKDIR /
+ADD train.sh /train.sh
+USER ptools
+ENV PATH=/opt/openmvs/bin/OpenMVS:/opt/openmvg/bin:/opt/cmvs/bin:/opt/colmap/bin:/opt/dpg:$PATH
+CMD "/train.sh"
