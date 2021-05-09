@@ -4,7 +4,7 @@
   "description": "Run ffmpeg serverless!",
   "dependencies": {
     "aws-sdk": "^2.173.0",
-    "lodash": "^4.17.14"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "ava": "^0.24.0",
